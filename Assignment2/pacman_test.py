@@ -6,6 +6,7 @@
 import pygame
 import math
 import numpy as np
+import argparse
 
 
 # In[2]:
@@ -17,7 +18,7 @@ pygame.init()
 
 
 display_width = 800
-display_height = 600
+display_height = 800
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('PACMAN')
@@ -52,81 +53,148 @@ def printMsg(text_string,x,y):
 def calc_direction(mx,my,px,py):
     return 1
 
-exit = False
-x_change = 0
-y_change = 0
-x = 300
-y = 500
-is_eaten = False
+if __name__ == '__main__':
 
-#monster attributes
-mon_x = 100
-mon_y = 100
-mon_vel_x = 5
-mon_vel_y = 0
+    #to implement seek/ chase/ flee
+    parser = argparse.ArgumentParser(description="Conway's GOL")
+    parser.add_argument('--behavior', dest='monsterBehavior', required=False)
+    args = parser.parse_args()
 
-#used to make pacman face in the direction of movement
-rot_angle = 0
-
-## testing asin
-print(np.degrees(math.asin(1)))
-
-while not exit: 
+    exit = False
     
-    #making the monster stay inside the game window
+    #pacman attributes
+    x_change = 0
+    y_change = 0
+    x = 300
+    y = 500
+    
 
-    if (mon_x + mon_vel_x) > display_width or (mon_x + mon_vel_x) < 0:
-        mon_vel_x = mon_vel_x * -1
+    #monster attributes
+    mon_x = 700
+    mon_y = 600
+    mon_vel = 2
+    mon_vel_x = 0
+    mon_vel_y = 0
+    is_eaten = False
 
-    if (mon_y + mon_vel_y) > display_height or (mon_y + mon_vel_y) < 0:
-        mon_vel_y = mon_vel_y * -1
+    ## test cordinates
+    test_x = 400
+    test_y = 400
 
-    mon_x = mon_x + mon_vel_x
-    mon_y = mon_y + mon_vel_y
+    #used to make pacman face in the direction of movement
+    rot_angle = 0
 
-    for event in pygame.event.get():
+    ## testing asin
+    #print(np.degrees(math.asin(1)))
+
+    ## the main game loop
+
+    while not exit: 
         
-        if event.type == pygame.QUIT:
-            exit = True
-        
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                x_change = -5
-                rot_angle = 180
-            elif event.key == pygame.K_RIGHT:
-                x_change = 5
-                rot_angle = 0
-            elif event.key == pygame.K_UP:
-                y_change = -5
-                rot_angle = 90
-            elif event.key == pygame.K_DOWN:
-                y_change = 5
-                rot_angle = -90
-            elif event.key == pygame.K_q:
-                exit = True
-        if event.type == pygame.KEYUP:
+        ## MOVEMENT FOR THE PACMAN
+
+        for event in pygame.event.get():
             
-            x_change = 0
-            y_change = 0
+            if event.type == pygame.QUIT:
+                exit = True
+            
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    x_change = -5
+                    rot_angle = 180
+                elif event.key == pygame.K_RIGHT:
+                    x_change = 5
+                    rot_angle = 0
+                elif event.key == pygame.K_UP:
+                    y_change = -5
+                    rot_angle = 90
+                elif event.key == pygame.K_DOWN:
+                    y_change = 5
+                    rot_angle = -90
+                elif event.key == pygame.K_q:
+                    exit = True
+            if event.type == pygame.KEYUP:
+                
+                x_change = 0
+                y_change = 0
+            
         
-    
-    x+= x_change
-    y+= y_change
+        x+= x_change
+        y+= y_change
 
-    gameDisplay.fill(white)
-    pacman(x,y,rot_angle)
-    monster(mon_x,mon_y,is_eaten)
-    
-    text1= "the distance between the centres is :"
-    text_dst = text1 + str(0)
-    #printMsg(text_dst,450,500)
-    
-    pygame.display.update()
-    
-    clock.tick(60)
+        ## Monster movement
+        ## making the monster stay inside the game window
+
+        
+        if args.monsterBehavior == 'seek':
+            
+            # taking care of divide by zero errors
+
+            if (test_x - mon_x) == 0:
+                if (test_y - mon_y) > 0:
+                    theta = math.radians(90)
+                elif (test_y - mon_y) < 0:
+                    theta = math.radians(-90)
+                else:
+                    theta = math.radians(0)
+            
+            else : 
+
+                tanVal = (test_y - mon_y)/(test_x - mon_x)
+                theta = (math.atan(tanVal))
+            
+            
+
+            # right half :
+            if (mon_x > test_x):
+                mon_vel_x = mon_vel * math.cos(theta) * -1
+                mon_vel_y = mon_vel * math.sin(theta) * -1
+            
+            ## left half
+            else:
+
+                mon_vel_x = mon_vel * math.cos(theta)
+                mon_vel_y = mon_vel * math.sin(theta)
+
+            '''
+            if (mon_x + mon_vel_x) > display_width or (mon_x + mon_vel_x) < 0:
+                mon_vel_x = mon_vel_x * -1
+
+            if (mon_y + mon_vel_y) > display_height or (mon_y + mon_vel_y) < 0:
+                mon_vel_y = mon_vel_y * -1
+            '''
+            
+            mon_x = mon_x + mon_vel_x
+            mon_y = mon_y + mon_vel_y
+
+        else:
+
+            if (mon_x + mon_vel_x) > display_width or (mon_x + mon_vel_x) < 0:
+                mon_vel_x = mon_vel_x * -1
+
+            if (mon_y + mon_vel_y) > display_height or (mon_y + mon_vel_y) < 0:
+                mon_vel_y = mon_vel_y * -1
+
+            mon_x = mon_x + mon_vel_x
+            mon_y = mon_y + mon_vel_y
+
+        ## displaying objects on the game window
+
+        gameDisplay.fill(white)
+        pacman(test_x,test_y,rot_angle)
+        monster(mon_x,mon_y,is_eaten)
+        
+        # printing theta vals
+        text1= "theta is :"
+        text_theta = text1 + str(math.degrees(theta))
+        printMsg(text_theta,450,500)
+        
+        pygame.display.update()
+        
+        clock.tick(60)
 
 
 
-pygame.quit()
-quit()
+    pygame.quit()
+    quit()
 
