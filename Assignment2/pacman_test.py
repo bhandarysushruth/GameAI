@@ -130,23 +130,23 @@ if __name__ == '__main__':
             
             # taking care of divide by zero errors
 
-            if (test_x - mon_x) == 0:
-                if (test_y - mon_y) > 0:
+            if (x - mon_x) == 0:
+                if (y - mon_y) > 0:
                     theta = math.radians(90)
-                elif (test_y - mon_y) < 0:
+                elif (y - mon_y) < 0:
                     theta = math.radians(-90)
                 else:
                     theta = math.radians(0)
             
             else : 
 
-                tanVal = (test_y - mon_y)/(test_x - mon_x)
+                tanVal = (y - mon_y)/(x - mon_x)
                 theta = (math.atan(tanVal))
             
             
 
             # right half :
-            if (mon_x > test_x):
+            if (mon_x > x):
                 mon_vel_x = mon_vel * math.cos(theta) * -1
                 mon_vel_y = mon_vel * math.sin(theta) * -1
             
@@ -181,7 +181,7 @@ if __name__ == '__main__':
         ## displaying objects on the game window
 
         gameDisplay.fill(white)
-        pacman(test_x,test_y,rot_angle)
+        pacman(x,y,rot_angle)
         monster(mon_x,mon_y,is_eaten)
         
         # printing theta vals
