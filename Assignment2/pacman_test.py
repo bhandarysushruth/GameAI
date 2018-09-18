@@ -53,6 +53,12 @@ def printMsg(text_string,x,y):
 def calc_direction(mx,my,px,py):
     return 1
 
+def calcDistance(x1,y1,x2,y2):
+    val = (x2-x1)**2
+    val += (y2-y1)**2
+    dist = math.sqrt(val)
+    return dist
+
 if __name__ == '__main__':
 
     #to implement seek/ chase/ flee
@@ -70,9 +76,10 @@ if __name__ == '__main__':
     
 
     #monster attributes
+    theta = 0
     mon_x = 700
     mon_y = 600
-    mon_vel = 2
+    mon_vel = 3
     mon_vel_x = 0
     mon_vel_y = 0
     is_eaten = False
@@ -126,7 +133,7 @@ if __name__ == '__main__':
         ## making the monster stay inside the game window
 
         
-        if args.monsterBehavior == 'seek':
+        if args.monsterBehavior == 'seek' or args.monsterBehavior == 'chase':
             
             # taking care of divide by zero errors
 
@@ -167,6 +174,51 @@ if __name__ == '__main__':
             mon_x = mon_x + mon_vel_x
             mon_y = mon_y + mon_vel_y
 
+        
+        elif args.monsterBehavior == 'flee':
+            
+            ## monster starts fleeing if pacman is within 200 pixels
+            if calcDistance(x,y,mon_x,mon_y) < 200:
+                
+                ## divide by zero errors
+
+                if (x - mon_x) == 0:
+                    if (y - mon_y) > 0:
+                        theta = math.radians(90)
+                    elif (y - mon_y) < 0:
+                        theta = math.radians(-90)
+                    else:
+                        theta = math.radians(0)
+                
+                else : 
+
+                    tanVal = (y - mon_y)/(x - mon_x)
+                    theta = (math.atan(tanVal))
+                
+                
+
+                # right half :
+                if (mon_x > x):
+                    mon_vel_x = mon_vel * math.cos(theta)
+                    mon_vel_y = mon_vel * math.sin(theta)
+                
+                ## left half
+                else:
+
+                    mon_vel_x = mon_vel * math.cos(theta) * -1
+                    mon_vel_y = mon_vel * math.sin(theta) * -1          
+
+
+            else :
+                ## monster stays in place if its more than 200 pixels away
+                mon_vel_x = 0
+                mon_vel_y = 0
+
+            mon_x = mon_x + mon_vel_x
+            mon_y = mon_y + mon_vel_y
+
+        
+
         else:
 
             if (mon_x + mon_vel_x) > display_width or (mon_x + mon_vel_x) < 0:
@@ -187,7 +239,12 @@ if __name__ == '__main__':
         # printing theta vals
         text1= "theta is :"
         text_theta = text1 + str(math.degrees(theta))
-        printMsg(text_theta,450,500)
+        printMsg(text_theta,400,30)
+
+        #printing the distance at that tick
+        text2= "Distance between monster and pacman :"
+        text_dist = text2 + str(calcDistance(x,y,mon_x,mon_y))
+        printMsg(text_dist,400,10)
         
         pygame.display.update()
         
