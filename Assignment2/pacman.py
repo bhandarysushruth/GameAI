@@ -1,7 +1,4 @@
 
-# coding: utf-8
-
-# In[1]:
 
 import pygame
 import math
@@ -9,12 +6,8 @@ import numpy as np
 import argparse
 
 
-# In[2]:
 
 pygame.init()
-
-
-# In[3]:
 
 
 display_width = 800
@@ -31,10 +24,14 @@ pac = pygame.transform.scale(pac, (50, 50))
 monst = pygame.image.load('monster.png')
 monst = pygame.transform.scale(monst, (50, 50))
 
-# In[4]:
+
+## displays the pacman (player) on the game window
+
 def pacman(x,y,rotation_angle):
     img = pygame.transform.rotate(pac, rotation_angle)
     gameDisplay.blit(img, (x,y))
+
+## displays the monster on the game window
 
 def monster(x,y,is_eaten):
     if not is_eaten:
@@ -49,6 +46,7 @@ def printMsg(text_string,x,y):
     gameDisplay.blit(text,(x, y))
 
 ## takes in the cordinates of the pacman and monster and the monster velocity and returns the angular velocities
+
 def seek(x,y,mx,my,mvel):
 
     if (x - mx) == 0:
@@ -79,9 +77,9 @@ def seek(x,y,mx,my,mvel):
 
     return mon_vel_x, mon_vel_y
 
-def flee(x,y,mx,my,mvel):
+def flee(x,y,mx,my,mvel,flee_radius):
 
-    if calcDistance(x,y,mx,my) < 200:
+    if calcDistance(x,y,mx,my) < flee_radius:
 
         ## divide by zero errors
 
@@ -218,7 +216,7 @@ if __name__ == '__main__':
             
             ## monster starts fleeing if pacman is within 200 pixels
 
-            mon_vel_x, mon_vel_y = flee(x, y, mon_x, mon_y,mon_vel)
+            mon_vel_x, mon_vel_y = flee(x, y, mon_x, mon_y,mon_vel,200)
 
             mon_x = mon_x + mon_vel_x
             mon_y = mon_y + mon_vel_y
@@ -245,10 +243,12 @@ if __name__ == '__main__':
         pacman(x,y,rot_angle)
         monster(mon_x,mon_y,is_eaten)
         
+        '''
         # printing theta vals
         text1= "theta is :"
         text_theta = text1 + str(math.degrees(theta))
         printMsg(text_theta,400,30)
+        '''
 
         #printing the distance at that tick
         text2= "Distance between monster and pacman :"
