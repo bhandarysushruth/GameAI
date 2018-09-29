@@ -1,0 +1,40 @@
+INSTRUCTIONS/EXPLANATIONS FOR HOMEWORK 3
+-------------------------------------
+
+- The folder contains 3 files. 
+	1.) flocking.py 
+	2.) pacman.py
+	3.) bresenham.py
+
+- The first 2 files contain the main codes. 'bressenham.py' generates the coordinates of the points in a line using the bressenham line drawing algorithm and those points I have used for the path following algorithm.
+
+- All the algorithms except flocking and separation are present in the file 'pacman.py'
+
+- in some implementations like path following the ghost might seem to be going adjacent to the path instead of going on it. This is because th (x,y) of the ghost is not it's centre but somewhere in the top left corner of the ghost image and that corner will be following the path correctly
+
+- For the same reason, in the collison avoidance implementation, it may seem like the ghost is changing it's course after hitting the obstacle. But since all the distances and position of the ghost are calculated wrt the top left corner, it just seems like its hitting the obstacle but in reality it doesn't
+
+Commands for running each of the codes is given below:
+-------------------------------------------------------
+
+1. Wander :
+	> python3 pacman.py --behavior wander
+
+2. Pursuit :
+	> python3 pacman.py --behavior pursue
+
+3. Velocity Matching :
+	> python3 pacman.py --behavior v_match
+
+4. Path Following :
+	> python3 pacman.py --behavior path
+
+5. Collision Avoidance :
+	> python3 pacman.py --behavior obstacles
+
+6. Flocking:
+	> python3 flocking.py
+
+7. Dynamic Seek: There is no command for this. I have written a function called dynamic seek which is a modification to the seek function from the previous assignment. The changes can be observed when we run the velocity matching or collision avoidance or pursuit. The chasing monster will first accelerate till it reaches its max velocity and will maintain max velocity untill its close to the target and then it will start decelerating
+
+8. Separation: The separation algorithm can be observed when running the flocking command. There is a function called separate in the 'flocking.py' file which implements the separation algorithm and that is one of the functions used for the flocking behavior
